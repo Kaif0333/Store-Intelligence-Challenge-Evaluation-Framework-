@@ -8,6 +8,7 @@ services:
   - type: redis
     name: storeintel-redis
     plan: free
+    ipAllowList: []
 
   - type: web
     name: store-intelligence-api
