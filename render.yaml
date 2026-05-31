@@ -1,0 +1,32 @@
+databases:
+  - name: storeintel-db
+    plan: free
+    databaseName: storeintel
+    user: storeintel
+
+services:
+  - type: web
+    name: store-intelligence-api
+    runtime: docker
+    repo: https://github.com/Kaif0333/Store-Intelligence-Challenge-Evaluation-Framework-.git
+    branch: main
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: storeintel-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: storeintel-redis
+          type: redis
+          property: connectionString
+      - key: AUTO_BOOTSTRAP_DEMO
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: ENVIRONMENT
+        value: production
+    healthCheckPath: /docs

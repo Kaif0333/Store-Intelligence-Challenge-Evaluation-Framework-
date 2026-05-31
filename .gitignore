@@ -26,9 +26,6 @@ npm-debug.log*
 *.xlsx
 *.xls
 *.pdf
-*.jpg
-*.jpeg
-*.png
 CCTV Footage-*/
 data/videos/
 data/pos/

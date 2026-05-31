@@ -29,7 +29,11 @@ def seed_reference_data(db: Session, settings: Settings) -> None:
         db.add(Store(id=settings.store_id, name=settings.store_name, city=settings.store_city))
         db.flush()
 
-    video_files = {path.stem.upper(): str(path) for path in settings.videos_path.glob("CAM *.mp4")}
+    video_files = (
+        {path.stem.upper(): str(path) for path in settings.videos_path.glob("CAM *.mp4")}
+        if settings.videos_path.exists()
+        else {}
+    )
     for camera_id, role in DEFAULT_CAMERA_ROLES.items():
         camera = db.get(Camera, camera_id)
         if camera is None:

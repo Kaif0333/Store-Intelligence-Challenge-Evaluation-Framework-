@@ -50,7 +50,7 @@ def import_pos_csv(db: Session, settings: Settings) -> int:
 
     csv_path = Path(settings.pos_csv_path)
     if not csv_path.exists():
-        return 0
+        return _seed_synthetic_pos(db, settings)
 
     inserted = 0
     with csv_path.open("r", encoding="utf-8-sig", newline="") as handle:
@@ -77,6 +77,57 @@ def import_pos_csv(db: Session, settings: Settings) -> int:
             )
             db.add(item)
             inserted += 1
+
+    db.commit()
+    return inserted
+
+
+def _seed_synthetic_pos(db: Session, settings: Settings) -> int:
+    """Generate synthetic POS rows so the demo pipeline works without a CSV file."""
+    now = datetime.now(ZoneInfo(settings.local_timezone))
+    base_time = now.replace(hour=10, minute=0, second=0, microsecond=0)
+
+    products = [
+        ("SKU001", "Lakme 9to5 Primer + Matte Foundation", Decimal("599"), Decimal("499")),
+        ("SKU002", "Maybelline Fit Me Compact", Decimal("299"), Decimal("269")),
+        ("SKU003", "Purplle Glow Serum", Decimal("449"), Decimal("399")),
+        ("SKU004", "Sugar Matte Lipstick", Decimal("699"), Decimal("599")),
+        ("SKU005", "Nykaa Skinshield SPF 50", Decimal("399"), Decimal("349")),
+        ("SKU006", "Minimalist 10% Niacinamide", Decimal("549"), Decimal("499")),
+        ("SKU007", "Faces Canada Eyeshadow Palette", Decimal("799"), Decimal("699")),
+        ("SKU008", "Plum Green Tea Facewash", Decimal("345"), Decimal("310")),
+        ("SKU009", "Biotique Bio Papaya Scrub", Decimal("199"), Decimal("179")),
+        ("SKU010", "Lotus Herbals BB Cream", Decimal("425"), Decimal("380")),
+        ("SKU011", "Mamaearth Onion Hair Oil", Decimal("399"), Decimal("349")),
+        ("SKU012", "Wow Vitamin C Face Wash", Decimal("449"), Decimal("399")),
+    ]
+
+    staff = [
+        ("SP1", "EMP101", "Arjun S."),
+        ("SP2", "EMP102", "Meera K."),
+        ("SP3", "EMP103", "Rahul D."),
+    ]
+
+    inserted = 0
+    for idx, (sku, product_name, gmv, nmv) in enumerate(products):
+        order_ts = base_time + timedelta(minutes=15 * idx + (idx % 3) * 7)
+        sp = staff[idx % len(staff)]
+        item = PosOrderItem(
+            store_id=settings.store_id,
+            order_id=f"ORD-DEMO-{idx + 1:04d}",
+            invoice_number=f"INV-DEMO-{idx + 1:04d}",
+            order_ts=order_ts,
+            salesperson_id=sp[0],
+            employee_code=sp[1],
+            salesperson_name=sp[2],
+            sku=sku,
+            product_name=product_name,
+            qty=1 + idx % 2,
+            gmv=gmv,
+            nmv=nmv,
+        )
+        db.add(item)
+        inserted += 1
 
     db.commit()
     return inserted

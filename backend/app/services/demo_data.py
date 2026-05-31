@@ -268,7 +268,8 @@ def _add_non_buyers(
     foh_zone: str | None,
     product_zone: str | None,
 ) -> None:
-    video_count = len(list(Path(settings.video_dir).glob("*.mp4")))
+    video_path = Path(settings.video_dir)
+    video_count = len(list(video_path.glob("*.mp4"))) if video_path.exists() else 0
     nonbuyer_count = max(18, int(len(invoices) * 1.9 + video_count * 3))
     window_start = invoices[0]["order_ts"] - timedelta(minutes=35)
     window_end = invoices[-1]["order_ts"] + timedelta(minutes=20)

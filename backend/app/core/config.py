@@ -14,7 +14,7 @@ class Settings(BaseSettings):
         default="postgresql+psycopg2://storeintel:storeintel@postgres:5432/storeintel"
     )
     redis_url: str = "redis://redis:6379/0"
-    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000,http://frontend:3000"
+    cors_origins: str = "*"
 
     store_id: str = "ST1008"
     store_name: str = "Brigade_Bangalore"
