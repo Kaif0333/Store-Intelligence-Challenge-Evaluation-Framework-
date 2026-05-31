@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: storeintel
+      POSTGRES_PASSWORD: storeintel
+      POSTGRES_DB: storeintel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U storeintel -d storeintel"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://storeintel:storeintel@postgres:5432/storeintel
+      REDIS_URL: redis://redis:6379/0
+      POS_CSV_PATH: /data/pos/transactions.csv
+      VIDEO_DIR: /data/videos
+      LAYOUT_CONFIG_PATH: /app/config/layout.zones.json
+      AUTO_BOOTSTRAP_DEMO: "true"
+      DEFAULT_MAX_SECONDS: "180"
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./Brigade_Bangalore_10_April_26 (1)bc6219c.csv:/data/pos/transactions.csv:ro"
+      - "./CCTV Footage-20260529T160731Z-3-00144614ea/CCTV Footage:/data/videos:ro"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    command: ["python", "-m", "app.workers.runner"]
+    environment:
+      DATABASE_URL: postgresql+psycopg2://storeintel:storeintel@postgres:5432/storeintel
+      REDIS_URL: redis://redis:6379/0
+      POS_CSV_PATH: /data/pos/transactions.csv
+      VIDEO_DIR: /data/videos
+      LAYOUT_CONFIG_PATH: /app/config/layout.zones.json
+      AUTO_BOOTSTRAP_DEMO: "true"
+      DEFAULT_MAX_SECONDS: "180"
+    volumes:
+      - "./Brigade_Bangalore_10_April_26 (1)bc6219c.csv:/data/pos/transactions.csv:ro"
+      - "./CCTV Footage-20260529T160731Z-3-00144614ea/CCTV Footage:/data/videos:ro"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

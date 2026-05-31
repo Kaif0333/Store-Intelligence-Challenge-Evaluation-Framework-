@@ -1,0 +1,4 @@
+# Optional heavier detector stack. The app runs without this file by falling
+# back to OpenCV motion detection and input-derived demo generation.
+ultralytics>=8.3.0
+

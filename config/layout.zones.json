@@ -1,0 +1,64 @@
+{
+  "store_id": "ST1008",
+  "coordinate_system": "normalized_frame",
+  "notes": "Polygons are normalized CCTV frame coordinates. They are intentionally coarse for MVP calibration and can be refined per camera from screenshots.",
+  "zones": [
+    {
+      "id": "ST1008:entrance",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Entrance",
+      "zone_type": "entrance",
+      "polygon": [[0.0, 0.40], [0.24, 0.40], [0.24, 1.0], [0.0, 1.0]]
+    },
+    {
+      "id": "ST1008:foh",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Front of House",
+      "zone_type": "foh",
+      "polygon": [[0.18, 0.18], [0.82, 0.18], [0.82, 0.88], [0.18, 0.88]]
+    },
+    {
+      "id": "ST1008:product_wall",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Product Wall",
+      "zone_type": "product_wall",
+      "polygon": [[0.20, 0.00], [0.88, 0.00], [0.88, 0.32], [0.20, 0.32]]
+    },
+    {
+      "id": "ST1008:makeup_unit",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Makeup Unit",
+      "zone_type": "makeup_unit",
+      "polygon": [[0.43, 0.30], [0.66, 0.30], [0.66, 0.72], [0.43, 0.72]]
+    },
+    {
+      "id": "ST1008:checkout",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Cash Counter",
+      "zone_type": "checkout",
+      "polygon": [[0.78, 0.20], [1.0, 0.20], [1.0, 0.82], [0.78, 0.82]]
+    },
+    {
+      "id": "ST1008:pmu",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "PMU",
+      "zone_type": "pmu",
+      "polygon": [[0.86, 0.62], [1.0, 0.62], [1.0, 1.0], [0.86, 1.0]]
+    },
+    {
+      "id": "ST1008:staff_like_area",
+      "store_id": "ST1008",
+      "camera_id": null,
+      "name": "Staff Like Area",
+      "zone_type": "staff_like_area",
+      "polygon": [[0.72, 0.0], [1.0, 0.0], [1.0, 0.22], [0.72, 0.22]]
+    }
+  ]
+}
+
