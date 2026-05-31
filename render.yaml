@@ -5,6 +5,10 @@ databases:
     user: storeintel
 
 services:
+  - type: redis
+    name: storeintel-redis
+    plan: free
+
   - type: web
     name: store-intelligence-api
     runtime: docker
