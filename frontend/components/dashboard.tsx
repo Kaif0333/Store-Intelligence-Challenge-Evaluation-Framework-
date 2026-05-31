@@ -70,6 +70,8 @@ export default function Dashboard() {
   const [runStatus, setRunStatus] = useState<RunStatus | null>(null);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
 
+  const [activeTab, setActiveTab] = useState("overview");
+
   async function load(runId = selectedRunId) {
     setRefreshing(true);
     try {
@@ -171,6 +173,14 @@ export default function Dashboard() {
   
   const heatmapColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-emerald-500", "bg-cyan-500", "bg-purple-500"];
 
+  const navItems = [
+    { id: "overview", label: "Overview", icon: "dashboard" },
+    { id: "inventory", label: "Inventory", icon: "inventory_2" },
+    { id: "traffic", label: "Traffic", icon: "group" },
+    { id: "heatmaps", label: "Heatmaps", icon: "distance" },
+    { id: "reports", label: "Reports", icon: "assessment" },
+  ];
+
   return (
     <div className="font-body-lg text-body-lg flex h-screen overflow-hidden bg-background text-on-surface">
       {/* Top Navigation (Mobile) */}
@@ -192,29 +202,23 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex-1 px-4 space-y-2 animate-fade-in-up opacity-0 delay-100" style={{animationDelay: "100ms", opacity: 1}}>
-          <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-primary bg-primary/10 border-l-4 border-primary font-label-caps text-label-caps hover:bg-surface-container-high transition-colors group" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">dashboard</span>
-            <span>Overview</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-caps text-label-caps hover:bg-surface-container-high transition-colors group" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">inventory_2</span>
-            <span>Inventory</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-caps text-label-caps hover:bg-surface-container-high transition-colors group" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">group</span>
-            <span>Traffic</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-caps text-label-caps hover:bg-surface-container-high transition-colors group" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">distance</span>
-            <span>Heatmaps</span>
-          </a>
-          <a className="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface font-label-caps text-label-caps hover:bg-surface-container-high transition-colors group" href="#">
-            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">assessment</span>
-            <span>Reports</span>
-          </a>
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-label-caps transition-colors group border-l-4 ${
+                activeTab === item.id 
+                  ? "text-primary bg-primary/10 border-primary" 
+                  : "border-transparent text-on-surface-variant hover:bg-white/5 hover:text-on-surface"
+              }`}
+            >
+              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
         </div>
         <div className="px-6 mb-6 animate-fade-in-up opacity-0 delay-200" style={{animationDelay: "200ms", opacity: 1}}>
-          <button className="w-full py-3 bg-white/5 border border-white/10 rounded-lg text-on-surface font-label-caps text-label-caps hover:bg-white/10 transition-colors">
+          <button onClick={() => alert("Global Map visualization coming in v2.0")} className="w-full py-3 bg-white/5 border border-white/10 rounded-lg text-on-surface font-label-caps text-label-caps hover:bg-white/10 transition-colors">
             View Global Map
           </button>
         </div>
@@ -222,34 +226,51 @@ export default function Dashboard() {
 
       {/* Main Content Canvas */}
       <main className="flex-1 ml-0 md:ml-[260px] pt-24 md:pt-6 px-container-padding pb-24 md:pb-6 overflow-y-auto">
-        {/* Header Actions */}
-        <div className="hidden md:flex justify-between items-center mb-8 animate-fade-in-up opacity-0" style={{animationDelay: "0ms", opacity: 1}}>
-          <div className="flex items-center gap-4">
-            <h2 className="font-headline-lg text-headline-lg text-on-surface">Store Intelligence</h2>
-            {error && <span className="text-sm text-error bg-error/10 px-2 py-1 rounded">{error}</span>}
-          </div>
-          <div className="flex gap-4">
+        {activeTab !== "overview" ? (
+          <div className="flex flex-col items-center justify-center h-full text-on-surface-variant animate-fade-in-up">
+            <span className="material-symbols-outlined text-[80px] mb-6 opacity-30 text-primary">construction</span>
+            <h2 className="text-3xl font-headline-lg text-on-surface mb-3">{navItems.find(n => n.id === activeTab)?.label} - Coming Soon</h2>
+            <p className="text-center max-w-md text-on-surface-variant mb-8">
+              This module is part of the full Purplle Store Intelligence suite. This MVP currently focuses on the real-time overview dashboard.
+            </p>
             <button 
-              onClick={() => load()} 
-              disabled={refreshing}
-              className="px-6 py-2 border border-outline rounded-lg text-on-surface hover:bg-white/5 transition-colors font-label-caps text-label-caps flex items-center gap-2"
+              onClick={() => setActiveTab("overview")} 
+              className="px-6 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-on-surface rounded-lg font-label-caps transition-colors flex items-center gap-2"
             >
-              <span className={`material-symbols-outlined text-[16px] ${refreshing ? "animate-spin" : ""}`}>refresh</span>
-              Refresh
-            </button>
-            <button 
-              onClick={startRun}
-              disabled={starting}
-              className="px-6 py-2 bg-[linear-gradient(110deg,#10b981,45%,#6ffbbe,55%,#03b5d3)] bg-[length:200%_100%] animate-shimmer text-black rounded-lg font-label-caps text-label-caps hover:opacity-90 transition-opacity font-bold flex items-center gap-2 disabled:opacity-50"
-            >
-              <span className="material-symbols-outlined text-[16px]">play_arrow</span>
-              {starting ? "Processing" : "Start Run"}
+              <span className="material-symbols-outlined">arrow_back</span>
+              Back to Overview
             </button>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Header Actions */}
+            <div className="hidden md:flex justify-between items-center mb-8 animate-fade-in-up opacity-0" style={{animationDelay: "0ms", opacity: 1}}>
+              <div className="flex items-center gap-4">
+                <h2 className="font-headline-lg text-headline-lg text-on-surface">Store Intelligence</h2>
+                {error && <span className="text-sm text-error bg-error/10 px-2 py-1 rounded">{error}</span>}
+              </div>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => load()} 
+                  disabled={refreshing}
+                  className="px-6 py-2 border border-outline rounded-lg text-on-surface hover:bg-white/5 transition-colors font-label-caps text-label-caps flex items-center gap-2"
+                >
+                  <span className={`material-symbols-outlined text-[16px] ${refreshing ? "animate-spin" : ""}`}>refresh</span>
+                  Refresh
+                </button>
+                <button 
+                  onClick={startRun}
+                  disabled={starting}
+                  className="px-6 py-2 bg-[linear-gradient(110deg,#10b981,45%,#6ffbbe,55%,#03b5d3)] bg-[length:200%_100%] animate-shimmer text-black rounded-lg font-label-caps text-label-caps hover:opacity-90 transition-opacity font-bold flex items-center gap-2 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined text-[16px]">play_arrow</span>
+                  {starting ? "Processing" : "Start Run"}
+                </button>
+              </div>
+            </div>
 
-        {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-gutter mb-gutter animate-fade-in-up opacity-0 delay-100" style={{animationDelay: "100ms", opacity: 1}}>
+            {/* KPI Row */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-gutter mb-gutter animate-fade-in-up opacity-0 delay-100" style={{animationDelay: "100ms", opacity: 1}}>
           <div className="glass-card rounded-xl p-[20px] hover-glow transition-all duration-300 border-t-primary/50 hover:border-t-primary hover:shadow-[0_-5px_15px_-5px_rgba(78,222,163,0.3)] group">
             <div className="flex justify-between items-start mb-2">
               <span className="font-label-caps text-label-caps text-on-surface-variant">Footfall</span>
@@ -445,22 +466,22 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+          </>
+        )}
       </main>
 
       {/* Bottom Navigation (Mobile) */}
       <nav className="md:hidden fixed bottom-0 w-full bg-surface-container-lowest/90 backdrop-blur-md border-t border-white/10 flex justify-around py-3 pb-safe z-50">
-        <a className="flex flex-col items-center gap-1 text-primary" href="#">
-          <span className="material-symbols-outlined">dashboard</span>
-          <span className="text-[10px] font-medium">Overview</span>
-        </a>
-        <a className="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
-          <span className="material-symbols-outlined">inventory_2</span>
-          <span className="text-[10px] font-medium">Inventory</span>
-        </a>
-        <a className="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
-          <span className="material-symbols-outlined">group</span>
-          <span className="text-[10px] font-medium">Traffic</span>
-        </a>
+        {navItems.slice(0, 3).map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`flex flex-col items-center gap-1 ${activeTab === item.id ? 'text-primary' : 'text-on-surface-variant'}`}
+          >
+            <span className="material-symbols-outlined">{item.icon}</span>
+            <span className="text-[10px] font-medium">{item.label}</span>
+          </button>
+        ))}
       </nav>
     </div>
   );
